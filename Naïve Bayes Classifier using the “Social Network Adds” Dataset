@@ -1,0 +1,50 @@
+import numpy as np 
+import matplotlib.pyplot as plt 
+import pandas as pd 
+import time 
+from sklearn.metrics import confusion_matrix 
+
+#reading dataset
+Data=pd.read_csv('Social_Network_Ads.csv') 
+print(Data.head(10)) 
+Data.describe() 
+
+#training and testing set size
+train_size=int(0.75*Data.shape[0]) 
+test_size=int(0.25*Data.shape[0]) 
+print("Training set size : "+ str(train_size)) 
+print("Testing set size : "+str(test_size)) 
+
+Data=Data.sample(frac=1) 
+X=Data.iloc[:,[2, 3]].values 
+y=Data.iloc[:,4].values 
+X=X.astype(float) 
+
+#training set split
+X_train=X[0:train_size,:] 
+y_train=y[0:train_size] 
+#testing set split
+X_test=X[train_size:,:] 
+y_test=y[train_size:] 
+
+#visualize the training set
+from matplotlib.colors import ListedColormap 
+X_set, y_set = X_train, y_train 
+for i, j in enumerate(np.unique(y_set)): 
+  plt.scatter(X_set[y_set == j, 0], X_set[y_set == j, 1], 
+  c = ListedColormap(('red', 'green'))(i), label = j,marker='.') 
+plt.title('Training set') 
+plt.xlabel('Age') 
+plt.ylabel('Estimated Salary') 
+plt.legend() 
+plt.show()
+
+# Fitting Naive Bayes to the Training set
+from sklearn.naive_bayes import GaussianNB 
+classifier = GaussianNB() 
+classifier.fit(X_train, y_train) 
+
+# Predicting the Test set results
+y_pred = classifier.predict(X_test) 
+cm2=confusion_matrix(y_test,y_pred) 
+print(“Confusion Matrix:”, cm2) 
